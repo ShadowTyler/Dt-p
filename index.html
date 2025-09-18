@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detroit Axle Price Matcher</title>
+    <title>Detroit Axle Kit Price Matcher</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -67,14 +67,32 @@
             margin-bottom: 25px;
         }
         
-        .search-section {
-            display: flex;
-            gap: 15px;
+        .input-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
             margin-bottom: 30px;
         }
         
-        .search-input {
-            flex: 1;
+        @media (max-width: 768px) {
+            .input-section {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .input-field {
+            width: 100%;
             padding: 15px;
             border: 2px solid var(--gray);
             border-radius: var(--radius);
@@ -82,7 +100,7 @@
             transition: all 0.3s;
         }
         
-        .search-input:focus {
+        .input-field:focus {
             outline: none;
             border-color: var(--primary);
         }
@@ -118,96 +136,86 @@
             background: #475569;
         }
         
-        .results-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
+        .btn-full {
+            width: 100%;
         }
         
-        @media (max-width: 768px) {
-            .results-section {
-                grid-template-columns: 1fr;
-            }
+        .results-section {
+            margin-top: 30px;
         }
         
         .product-card {
             display: flex;
             flex-direction: column;
-            height: 100%;
-        }
-        
-        .product-image {
-            height: 200px;
-            background-color: #f1f5f9;
+            margin-bottom: 20px;
+            border: 1px solid var(--gray);
             border-radius: var(--radius);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 15px;
             overflow: hidden;
         }
         
-        .product-image img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-        
-        .product-info {
-            margin-bottom: 15px;
+        .product-header {
+            background: var(--light);
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .product-title {
             font-size: 1.2rem;
             font-weight: 600;
-            margin-bottom: 10px;
             color: var(--dark);
         }
         
         .product-price {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: 700;
-            margin-bottom: 15px;
             color: var(--primary);
         }
         
         .product-details {
-            color: var(--secondary);
-            margin-bottom: 15px;
+            padding: 15px;
         }
         
-        .competitor-price {
+        .parts-list {
+            list-style: none;
+            margin-top: 10px;
+        }
+        
+        .part-item {
+            padding: 10px;
+            border-bottom: 1px solid var(--gray);
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            background-color: var(--light);
-            border-radius: var(--radius);
-            margin-bottom: 10px;
         }
         
-        .price-comparison {
+        .part-item:last-child {
+            border-bottom: none;
+        }
+        
+        .excluded {
+            text-decoration: line-through;
+            color: var(--secondary);
+        }
+        
+        .refund-summary {
             margin-top: 20px;
+            background: var(--light);
+            padding: 20px;
+            border-radius: var(--radius);
         }
         
-        .competitor-name {
-            font-weight: 500;
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--gray);
         }
         
-        .competitor-amount {
-            font-weight: 600;
-        }
-        
-        .lower-price {
-            color: var(--success);
-        }
-        
-        .higher-price {
-            color: var(--danger);
-        }
-        
-        .match-price {
-            color: var(--warning);
+        .summary-item:last-child {
+            border-bottom: none;
+            font-weight: 700;
+            font-size: 1.2rem;
         }
         
         .loading {
@@ -240,45 +248,24 @@
             text-align: center;
         }
         
-        .history-section {
-            margin-top: 40px;
-        }
-        
-        .history-title {
-            font-size: 1.3rem;
-            margin-bottom: 15px;
-            color: var(--dark);
-        }
-        
-        .history-items {
-            display: flex;
-            gap: 15px;
-            overflow-x: auto;
-            padding: 10px 5px;
-        }
-        
-        .history-item {
-            background: white;
+        .instructions {
+            background: #eff6ff;
+            padding: 20px;
             border-radius: var(--radius);
-            padding: 15px;
-            min-width: 200px;
-            box-shadow: var(--shadow);
-            cursor: pointer;
-            transition: all 0.3s;
+            margin-bottom: 20px;
         }
         
-        .history-item:hover {
-            transform: translateY(-5px);
-        }
-        
-        .history-part {
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-        
-        .history-price {
+        .instructions h3 {
+            margin-bottom: 10px;
             color: var(--primary);
-            font-weight: 700;
+        }
+        
+        .instructions ol {
+            margin-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
         }
         
         footer {
@@ -292,109 +279,134 @@
 <body>
     <div class="container">
         <header>
-            <h1>Detroit Axle Price Matcher</h1>
-            <p>Find the best prices for your auto parts</p>
+            <h1>Detroit Axle Kit Price Matcher</h1>
+            <p>Calculate refund amounts for individual parts from kits</p>
         </header>
         
+        <div class="instructions">
+            <h3>How to Use:</h3>
+            <ol>
+                <li>Enter the kit part number and total kit price</li>
+                <li>Click "Search Kit" to load the kit contents</li>
+                <li>Select which parts to include in the refund calculation</li>
+                <li>Review the calculated refund amount</li>
+            </ol>
+            <p><strong>Note:</strong> Brake cleaner and brake fluid are automatically excluded from refund calculations.</p>
+        </div>
+        
         <div class="card">
-            <div class="search-section">
-                <input type="text" class="search-input" placeholder="Enter Detroit Axle part number (e.g., DA4020, DA4787)" id="partNumber">
-                <button class="btn btn-primary" id="searchBtn">
-                    <i class="fas fa-search"></i> Search
-                </button>
+            <div class="input-section">
+                <div>
+                    <div class="input-group">
+                        <label for="kitNumber">Kit Part Number</label>
+                        <input type="text" class="input-field" id="kitNumber" placeholder="e.g., DA5895, DA7854">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="kitPrice">Total Kit Price ($)</label>
+                        <input type="number" class="input-field" id="kitPrice" placeholder="Enter the full kit price">
+                    </div>
+                    
+                    <button class="btn btn-primary btn-full" id="searchBtn">
+                        <i class="fas fa-search"></i> Search Kit
+                    </button>
+                </div>
+                
+                <div>
+                    <div class="input-group">
+                        <label for="excludedParts">Automatically Excluded</label>
+                        <div style="background: #f8fafc; padding: 15px; border-radius: var(--radius);">
+                            <div><i class="fas fa-times-circle" style="color: var(--danger);"></i> Brake Cleaner</div>
+                            <div><i class="fas fa-times-circle" style="color: var(--danger);"></i> Brake Fluid</div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="manualExclude">Manually Exclude Parts</label>
+                        <input type="text" class="input-field" id="manualExclude" placeholder="Part numbers separated by commas">
+                    </div>
+                </div>
             </div>
             
             <div class="error-message" id="errorMessage">
                 <i class="fas fa-exclamation-circle"></i> 
-                <span id="errorText">Part not found. Please check the part number and try again.</span>
+                <span id="errorText">Kit not found. Please check the kit number and try again.</span>
             </div>
             
             <div class="loading" id="loading">
                 <div class="spinner"></div>
-                <p>Searching for part information...</p>
+                <p>Searching for kit information...</p>
             </div>
             
             <div class="results-section" id="resultsSection">
-                <!-- Product information will be inserted here -->
-            </div>
-        </div>
-        
-        <div class="card history-section">
-            <h2 class="history-title">Recent Searches</h2>
-            <div class="history-items" id="historyItems">
-                <!-- Search history will be inserted here -->
+                <!-- Kit information will be inserted here -->
             </div>
         </div>
         
         <footer>
-            <p>Detroit Axle Price Matcher &copy; 2023 | Designed for GitHub Pages deployment</p>
+            <p>Detroit Axle Kit Price Matcher &copy; 2023 | Designed for GitHub Pages deployment</p>
         </footer>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const partNumberInput = document.getElementById('partNumber');
+            const kitNumberInput = document.getElementById('kitNumber');
+            const kitPriceInput = document.getElementById('kitPrice');
+            const manualExcludeInput = document.getElementById('manualExclude');
             const searchBtn = document.getElementById('searchBtn');
             const resultsSection = document.getElementById('resultsSection');
             const loadingElement = document.getElementById('loading');
             const errorMessage = document.getElementById('errorMessage');
             const errorText = document.getElementById('errorText');
-            const historyItems = document.getElementById('historyItems');
             
-            // Sample product database (in a real application, this would be an API call)
-            const productDatabase = {
-                'DA4020': {
-                    name: '2x Front Wheel Bearings and Hubs Assembly',
-                    price: 119.99,
-                    image: 'https://via.placeholder.com/300x200?text=Wheel+Bearing',
-                    description: 'Fits Chevy Silverado, GMC Sierra, Cadillac Escalade 2WD & 4WD'
+            // Sample kit database (in a real application, this would be an API call)
+            const kitDatabase = {
+                'DA5895': {
+                    name: 'Complete Front Brake Kit',
+                    parts: [
+                        { number: 'DA-BC001', name: 'Brake Cleaner', price: 5.99 },
+                        { number: 'DA-BF002', name: 'Brake Fluid', price: 8.99 },
+                        { number: 'DA-RC105', name: 'Brake Caliper', price: 42.50 },
+                        { number: 'DA-RP208', name: 'Brake Pad Set', price: 35.75 },
+                        { number: 'DA-RR305', name: 'Brake Rotor', price: 38.25 }
+                    ]
                 },
-                'DA4787': {
-                    name: 'Front Driver & Passenger Side CV Axle Shaft Assembly',
-                    price: 149.99,
-                    image: 'https://via.placeholder.com/300x200?text=CV+Axle',
-                    description: 'Fits Chevy Malibu, Pontiac G6, Saturn AURA'
+                'DA7854': {
+                    name: 'Suspension Repair Kit',
+                    parts: [
+                        { number: 'DA-SS402', name: 'Strut Assembly', price: 67.99 },
+                        { number: 'DA-SW506', name: 'Sway Bar Link', price: 18.50 },
+                        { number: 'DA-CV604', name: 'CV Axle', price: 89.99 },
+                        { number: 'DA-BC001', name: 'Brake Cleaner', price: 5.99 },
+                        { number: 'DA-BF002', name: 'Brake Fluid', price: 8.99 }
+                    ]
                 },
-                'DA58382': {
-                    name: 'Complete Strut Assembly',
-                    price: 89.99,
-                    image: 'https://via.placeholder.com/300x200?text=Strut+Assembly',
-                    description: 'Front Left or Right for Chevy Cruze, Sonic, Buick Verano'
-                },
-                'DA8002': {
-                    name: '2x Front Disc Brake Caliper Assembly',
-                    price: 99.99,
-                    image: 'https://via.placeholder.com/300x200?text=Brake+Caliper',
-                    description: 'Fits Ford F-150, Lincoln Mark LT'
+                'DA8721': {
+                    name: 'Wheel Bearing Kit',
+                    parts: [
+                        { number: 'DA-WB701', name: 'Wheel Bearing', price: 45.99 },
+                        { number: 'DA-WS802', name: 'Wheel Seal', price: 8.25 },
+                        { number: 'DA-BC001', name: 'Brake Cleaner', price: 5.99 },
+                        { number: 'DA-BF002', name: 'Brake Fluid', price: 8.99 },
+                        { number: 'DA-LG905', name: 'Lubricating Grease', price: 6.50 }
+                    ]
                 }
             };
             
-            // Sample competitor prices
-            const competitors = [
-                { name: 'AutoZone', priceModifier: 1.15 }, // 15% higher
-                { name: 'Advance Auto', priceModifier: 1.1 }, // 10% higher
-                { name: 'O\'Reilly', priceModifier: 1.12 }, // 12% higher
-                { name: 'RockAuto', priceModifier: 0.95 }, // 5% lower
-                { name: 'Amazon', priceModifier: 0.98 } // 2% lower
-            ];
-            
-            // Load search history from localStorage
-            let searchHistory = JSON.parse(localStorage.getItem('detroitAxleSearchHistory')) || [];
-            renderSearchHistory();
-            
             // Event listeners
-            searchBtn.addEventListener('click', searchPart);
-            partNumberInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    searchPart();
-                }
-            });
+            searchBtn.addEventListener('click', searchKit);
             
-            function searchPart() {
-                const partNumber = partNumberInput.value.trim().toUpperCase();
+            function searchKit() {
+                const kitNumber = kitNumberInput.value.trim().toUpperCase();
+                const kitPrice = parseFloat(kitPriceInput.value);
                 
-                if (!partNumber) {
-                    showError('Please enter a part number');
+                if (!kitNumber) {
+                    showError('Please enter a kit number');
+                    return;
+                }
+                
+                if (!kitPrice || kitPrice <= 0) {
+                    showError('Please enter a valid kit price');
                     return;
                 }
                 
@@ -407,55 +419,83 @@
                 setTimeout(() => {
                     loadingElement.style.display = 'none';
                     
-                    if (productDatabase[partNumber]) {
-                        displayProductInfo(partNumber, productDatabase[partNumber]);
-                        addToSearchHistory(partNumber, productDatabase[partNumber]);
+                    if (kitDatabase[kitNumber]) {
+                        displayKitInfo(kitNumber, kitDatabase[kitNumber], kitPrice);
                     } else {
-                        showError('Part number "' + partNumber + '" not found in our database. Try DA4020, DA4787, DA58382, or DA8002.');
+                        showError('Kit number "' + kitNumber + '" not found in our database. Try DA5895, DA7854, or DA8721.');
                     }
                 }, 1500);
             }
             
-            function displayProductInfo(partNumber, product) {
-                // Generate competitor prices
-                const competitorPrices = competitors.map(comp => {
-                    const price = (product.price * comp.priceModifier).toFixed(2);
-                    return { name: comp.name, price: price };
+            function displayKitInfo(kitNumber, kit, kitPrice) {
+                // Get manually excluded parts
+                const manualExcludeParts = manualExcludeInput.value.split(',').map(part => part.trim().toUpperCase());
+                
+                // Calculate total parts price and identify excluded parts
+                let totalPartsPrice = 0;
+                const excludedParts = ['DA-BC001', 'DA-BF002']; // Always exclude brake cleaner and fluid
+                
+                // Add manually excluded parts
+                manualExcludeParts.forEach(part => {
+                    if (part && !excludedParts.includes(part)) {
+                        excludedParts.push(part);
+                    }
                 });
                 
-                // Sort competitors by price
-                competitorPrices.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+                // Filter parts and calculate total price
+                const includedParts = kit.parts.filter(part => !excludedParts.includes(part.number));
+                includedParts.forEach(part => {
+                    totalPartsPrice += part.price;
+                });
                 
-                const productHTML = `
+                // Calculate refund amount
+                const refundAmount = (kitPrice * (totalPartsPrice / getTotalKitValue(kit.parts))).toFixed(2);
+                
+                const kitHTML = `
                     <div class="product-card">
-                        <div class="product-image">
-                            <img src="${product.image}" alt="${product.name}">
+                        <div class="product-header">
+                            <div class="product-title">${kit.name} (${kitNumber})</div>
+                            <div class="product-price">$${kitPrice}</div>
                         </div>
-                        <div class="product-info">
-                            <h2 class="product-title">${product.name}</h2>
-                            <div class="product-price">$${product.price}</div>
-                            <div class="product-details">${product.description}</div>
-                            <div class="product-details"><strong>Part Number:</strong> ${partNumber}</div>
+                        <div class="product-details">
+                            <h3>Kit Contents:</h3>
+                            <ul class="parts-list">
+                                ${kit.parts.map(part => `
+                                    <li class="part-item ${excludedParts.includes(part.number) ? 'excluded' : ''}">
+                                        <span>${part.number} - ${part.name}</span>
+                                        <span>$${part.price}</span>
+                                    </li>
+                                `).join('')}
+                            </ul>
                         </div>
                     </div>
-                    <div class="price-comparison">
-                        <h3>Price Comparison</h3>
-                        <div class="competitor-price">
-                            <span class="competitor-name">Detroit Axle</span>
-                            <span class="competitor-amount">$${product.price}</span>
+                    
+                    <div class="refund-summary">
+                        <h3>Refund Calculation</h3>
+                        <div class="summary-item">
+                            <span>Total Kit Price:</span>
+                            <span>$${kitPrice}</span>
                         </div>
-                        ${competitorPrices.map(comp => `
-                            <div class="competitor-price">
-                                <span class="competitor-name">${comp.name}</span>
-                                <span class="competitor-amount ${parseFloat(comp.price) < product.price ? 'lower-price' : (parseFloat(comp.price) > product.price ? 'higher-price' : 'match-price')}">
-                                    $${comp.price} ${parseFloat(comp.price) < product.price ? '(Lower)' : (parseFloat(comp.price) > product.price ? '(Higher)' : '(Match)')}
-                                </span>
-                            </div>
-                        `).join('')}
+                        <div class="summary-item">
+                            <span>Value of Included Parts:</span>
+                            <span>$${totalPartsPrice.toFixed(2)}</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Total Kit Value:</span>
+                            <span>$${getTotalKitValue(kit.parts).toFixed(2)}</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Refund Amount:</span>
+                            <span>$${refundAmount}</span>
+                        </div>
                     </div>
                 `;
                 
-                resultsSection.innerHTML = productHTML;
+                resultsSection.innerHTML = kitHTML;
+            }
+            
+            function getTotalKitValue(parts) {
+                return parts.reduce((total, part) => total + part.price, 0);
             }
             
             function showError(message) {
@@ -467,57 +507,9 @@
                 errorMessage.style.display = 'none';
             }
             
-            function addToSearchHistory(partNumber, product) {
-                // Remove if already exists
-                searchHistory = searchHistory.filter(item => item.partNumber !== partNumber);
-                
-                // Add to beginning of history
-                searchHistory.unshift({
-                    partNumber: partNumber,
-                    name: product.name,
-                    price: product.price,
-                    timestamp: new Date().toISOString()
-                });
-                
-                // Keep only last 5 searches
-                if (searchHistory.length > 5) {
-                    searchHistory = searchHistory.slice(0, 5);
-                }
-                
-                // Save to localStorage
-                localStorage.setItem('detroitAxleSearchHistory', JSON.stringify(searchHistory));
-                
-                // Update UI
-                renderSearchHistory();
-            }
-            
-            function renderSearchHistory() {
-                if (searchHistory.length === 0) {
-                    historyItems.innerHTML = '<p>No recent searches</p>';
-                    return;
-                }
-                
-                historyItems.innerHTML = searchHistory.map(item => `
-                    <div class="history-item" data-part="${item.partNumber}">
-                        <div class="history-part">${item.partNumber}</div>
-                        <div class="history-name">${item.name.substring(0, 40)}${item.name.length > 40 ? '...' : ''}</div>
-                        <div class="history-price">$${item.price}</div>
-                    </div>
-                `).join('');
-                
-                // Add click event to history items
-                document.querySelectorAll('.history-item').forEach(item => {
-                    item.addEventListener('click', function() {
-                        const partNumber = this.getAttribute('data-part');
-                        partNumberInput.value = partNumber;
-                        searchPart();
-                    });
-                });
-            }
-            
-            // Preload a part for demonstration
-            partNumberInput.value = 'DA4020';
-            searchPart();
+            // Preload a kit for demonstration
+            kitNumberInput.value = 'DA5895';
+            kitPriceInput.value = '129.99';
         });
     </script>
 </body>
