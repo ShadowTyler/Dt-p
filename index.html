@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detroit Axle Kit Price Matcher</title>
+    <title>Detroit Axle Refund Calculator</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -136,66 +136,47 @@
             background: #475569;
         }
         
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #0da271;
+        }
+        
         .btn-full {
             width: 100%;
         }
         
-        .results-section {
-            margin-top: 30px;
+        .parts-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
         }
         
-        .product-card {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 20px;
-            border: 1px solid var(--gray);
-            border-radius: var(--radius);
-            overflow: hidden;
-        }
-        
-        .product-header {
-            background: var(--light);
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .product-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--dark);
-        }
-        
-        .product-price {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--primary);
-        }
-        
-        .product-details {
-            padding: 15px;
-        }
-        
-        .parts-list {
-            list-style: none;
-            margin-top: 10px;
-        }
-        
-        .part-item {
-            padding: 10px;
+        .parts-table th, .parts-table td {
+            padding: 12px 15px;
+            text-align: left;
             border-bottom: 1px solid var(--gray);
-            display: flex;
-            justify-content: space-between;
         }
         
-        .part-item:last-child {
-            border-bottom: none;
+        .parts-table th {
+            background-color: var(--light);
+            font-weight: 600;
         }
         
-        .excluded {
-            text-decoration: line-through;
-            color: var(--secondary);
+        .parts-table tr:hover {
+            background-color: #f8fafc;
+        }
+        
+        .checkbox-cell {
+            width: 50px;
+            text-align: center;
+        }
+        
+        .action-cell {
+            width: 80px;
         }
         
         .refund-summary {
@@ -216,26 +197,6 @@
             border-bottom: none;
             font-weight: 700;
             font-size: 1.2rem;
-        }
-        
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 40px;
-        }
-        
-        .spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            border-left-color: var(--primary);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
         }
         
         .error-message {
@@ -274,228 +235,233 @@
             color: var(--secondary);
             padding: 20px;
         }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--secondary);
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--gray);
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Detroit Axle Kit Price Matcher</h1>
-            <p>Calculate refund amounts for individual parts from kits</p>
+            <h1>Detroit Axle Refund Calculator</h1>
+            <p>Manually calculate refund amounts for individual parts</p>
         </header>
         
         <div class="instructions">
             <h3>How to Use:</h3>
             <ol>
-                <li>Enter the kit part number and total kit price</li>
-                <li>Click "Search Kit" to load the kit contents</li>
+                <li>Enter part details in the form</li>
+                <li>Click "Add Part" to add it to the list</li>
                 <li>Select which parts to include in the refund calculation</li>
                 <li>Review the calculated refund amount</li>
             </ol>
-            <p><strong>Note:</strong> Brake cleaner and brake fluid are automatically excluded from refund calculations.</p>
         </div>
         
         <div class="card">
             <div class="input-section">
                 <div>
                     <div class="input-group">
-                        <label for="kitNumber">Kit Part Number</label>
-                        <input type="text" class="input-field" id="kitNumber" placeholder="e.g., DA5895, DA7854">
+                        <label for="partNumber">Part Number</label>
+                        <input type="text" class="input-field" id="partNumber" placeholder="e.g., DA5895">
                     </div>
                     
                     <div class="input-group">
-                        <label for="kitPrice">Total Kit Price ($)</label>
-                        <input type="number" class="input-field" id="kitPrice" placeholder="Enter the full kit price">
+                        <label for="partName">Part Name</label>
+                        <input type="text" class="input-field" id="partName" placeholder="e.g., Brake Caliper">
                     </div>
-                    
-                    <button class="btn btn-primary btn-full" id="searchBtn">
-                        <i class="fas fa-search"></i> Search Kit
-                    </button>
                 </div>
                 
                 <div>
                     <div class="input-group">
-                        <label for="excludedParts">Automatically Excluded</label>
-                        <div style="background: #f8fafc; padding: 15px; border-radius: var(--radius);">
-                            <div><i class="fas fa-times-circle" style="color: var(--danger);"></i> Brake Cleaner</div>
-                            <div><i class="fas fa-times-circle" style="color: var(--danger);"></i> Brake Fluid</div>
-                        </div>
+                        <label for="partPrice">Price ($)</label>
+                        <input type="number" class="input-field" id="partPrice" placeholder="e.g., 42.50" step="0.01">
                     </div>
                     
                     <div class="input-group">
-                        <label for="manualExclude">Manually Exclude Parts</label>
-                        <input type="text" class="input-field" id="manualExclude" placeholder="Part numbers separated by commas">
+                        <label for="partQuantity">Quantity</label>
+                        <input type="number" class="input-field" id="partQuantity" placeholder="e.g., 2" value="1" min="1">
                     </div>
                 </div>
             </div>
             
+            <button class="btn btn-primary btn-full" id="addPartBtn">
+                <i class="fas fa-plus"></i> Add Part
+            </button>
+            
             <div class="error-message" id="errorMessage">
                 <i class="fas fa-exclamation-circle"></i> 
-                <span id="errorText">Kit not found. Please check the kit number and try again.</span>
+                <span id="errorText">Please fill all part details correctly.</span>
             </div>
             
-            <div class="loading" id="loading">
-                <div class="spinner"></div>
-                <p>Searching for kit information...</p>
+            <div id="partsContainer">
+                <table class="parts-table" id="partsTable">
+                    <thead>
+                        <tr>
+                            <th class="checkbox-cell">Refund</th>
+                            <th>Part Number</th>
+                            <th>Part Name</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th class="action-cell">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="partsList">
+                        <!-- Parts will be added here -->
+                    </tbody>
+                </table>
+                
+                <div class="empty-state" id="emptyState">
+                    <i class="fas fa-tools"></i>
+                    <h3>No parts added yet</h3>
+                    <p>Add parts using the form above to get started</p>
+                </div>
             </div>
             
-            <div class="results-section" id="resultsSection">
-                <!-- Kit information will be inserted here -->
+            <div class="refund-summary" id="refundSummary">
+                <h3>Refund Summary</h3>
+                <div class="summary-item">
+                    <span>Total Parts Value:</span>
+                    <span id="totalValue">$0.00</span>
+                </div>
+                <div class="summary-item">
+                    <span>Refund Amount:</span>
+                    <span id="refundAmount">$0.00</span>
+                </div>
             </div>
         </div>
         
         <footer>
-            <p>Detroit Axle Kit Price Matcher &copy; 2023 | Designed for GitHub Pages deployment</p>
+            <p>Detroit Axle Refund Calculator &copy; 2023 | Designed for GitHub Pages deployment</p>
         </footer>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const kitNumberInput = document.getElementById('kitNumber');
-            const kitPriceInput = document.getElementById('kitPrice');
-            const manualExcludeInput = document.getElementById('manualExclude');
-            const searchBtn = document.getElementById('searchBtn');
-            const resultsSection = document.getElementById('resultsSection');
-            const loadingElement = document.getElementById('loading');
+            const partNumberInput = document.getElementById('partNumber');
+            const partNameInput = document.getElementById('partName');
+            const partPriceInput = document.getElementById('partPrice');
+            const partQuantityInput = document.getElementById('partQuantity');
+            const addPartBtn = document.getElementById('addPartBtn');
+            const partsList = document.getElementById('partsList');
             const errorMessage = document.getElementById('errorMessage');
             const errorText = document.getElementById('errorText');
+            const totalValueElement = document.getElementById('totalValue');
+            const refundAmountElement = document.getElementById('refundAmount');
+            const emptyState = document.getElementById('emptyState');
+            const partsTable = document.getElementById('partsTable');
+            const refundSummary = document.getElementById('refundSummary');
             
-            // Sample kit database (in a real application, this would be an API call)
-            const kitDatabase = {
-                'DA5895': {
-                    name: 'Complete Front Brake Kit',
-                    parts: [
-                        { number: 'DA-BC001', name: 'Brake Cleaner', price: 5.99 },
-                        { number: 'DA-BF002', name: 'Brake Fluid', price: 8.99 },
-                        { number: 'DA-RC105', name: 'Brake Caliper', price: 42.50 },
-                        { number: 'DA-RP208', name: 'Brake Pad Set', price: 35.75 },
-                        { number: 'DA-RR305', name: 'Brake Rotor', price: 38.25 }
-                    ]
-                },
-                'DA7854': {
-                    name: 'Suspension Repair Kit',
-                    parts: [
-                        { number: 'DA-SS402', name: 'Strut Assembly', price: 67.99 },
-                        { number: 'DA-SW506', name: 'Sway Bar Link', price: 18.50 },
-                        { number: 'DA-CV604', name: 'CV Axle', price: 89.99 },
-                        { number: 'DA-BC001', name: 'Brake Cleaner', price: 5.99 },
-                        { number: 'DA-BF002', name: 'Brake Fluid', price: 8.99 }
-                    ]
-                },
-                'DA8721': {
-                    name: 'Wheel Bearing Kit',
-                    parts: [
-                        { number: 'DA-WB701', name: 'Wheel Bearing', price: 45.99 },
-                        { number: 'DA-WS802', name: 'Wheel Seal', price: 8.25 },
-                        { number: 'DA-BC001', name: 'Brake Cleaner', price: 5.99 },
-                        { number: 'DA-BF002', name: 'Brake Fluid', price: 8.99 },
-                        { number: 'DA-LG905', name: 'Lubricating Grease', price: 6.50 }
-                    ]
-                }
-            };
+            let parts = [];
             
             // Event listeners
-            searchBtn.addEventListener('click', searchKit);
+            addPartBtn.addEventListener('click', addPart);
             
-            function searchKit() {
-                const kitNumber = kitNumberInput.value.trim().toUpperCase();
-                const kitPrice = parseFloat(kitPriceInput.value);
+            function addPart() {
+                const partNumber = partNumberInput.value.trim();
+                const partName = partNameInput.value.trim();
+                const partPrice = parseFloat(partPriceInput.value);
+                const partQuantity = parseInt(partQuantityInput.value);
                 
-                if (!kitNumber) {
-                    showError('Please enter a kit number');
+                if (!partNumber || !partName || isNaN(partPrice) || partPrice <= 0 || isNaN(partQuantity) || partQuantity <= 0) {
+                    showError('Please fill all part details correctly');
                     return;
                 }
                 
-                if (!kitPrice || kitPrice <= 0) {
-                    showError('Please enter a valid kit price');
-                    return;
-                }
-                
-                // Show loading state
-                loadingElement.style.display = 'block';
-                resultsSection.innerHTML = '';
                 hideError();
                 
-                // Simulate API call with timeout
-                setTimeout(() => {
-                    loadingElement.style.display = 'none';
-                    
-                    if (kitDatabase[kitNumber]) {
-                        displayKitInfo(kitNumber, kitDatabase[kitNumber], kitPrice);
-                    } else {
-                        showError('Kit number "' + kitNumber + '" not found in our database. Try DA5895, DA7854, or DA8721.');
-                    }
-                }, 1500);
+                // Add part to array
+                parts.push({
+                    id: Date.now(),
+                    number: partNumber,
+                    name: partName,
+                    price: partPrice,
+                    quantity: partQuantity,
+                    refund: true
+                });
+                
+                // Clear form
+                partNumberInput.value = '';
+                partNameInput.value = '';
+                partPriceInput.value = '';
+                partQuantityInput.value = '1';
+                partNumberInput.focus();
+                
+                // Update UI
+                renderPartsList();
+                calculateRefund();
             }
             
-            function displayKitInfo(kitNumber, kit, kitPrice) {
-                // Get manually excluded parts
-                const manualExcludeParts = manualExcludeInput.value.split(',').map(part => part.trim().toUpperCase());
+            function renderPartsList() {
+                if (parts.length === 0) {
+                    emptyState.style.display = 'block';
+                    partsTable.style.display = 'none';
+                    refundSummary.style.display = 'none';
+                    return;
+                }
                 
-                // Calculate total parts price and identify excluded parts
-                let totalPartsPrice = 0;
-                const excludedParts = ['DA-BC001', 'DA-BF002']; // Always exclude brake cleaner and fluid
+                emptyState.style.display = 'none';
+                partsTable.style.display = 'table';
+                refundSummary.style.display = 'block';
                 
-                // Add manually excluded parts
-                manualExcludeParts.forEach(part => {
-                    if (part && !excludedParts.includes(part)) {
-                        excludedParts.push(part);
+                partsList.innerHTML = parts.map(part => `
+                    <tr>
+                        <td class="checkbox-cell">
+                            <input type="checkbox" ${part.refund ? 'checked' : ''} onchange="toggleRefund(${part.id})">
+                        </td>
+                        <td>${part.number}</td>
+                        <td>${part.name}</td>
+                        <td>$${part.price.toFixed(2)}</td>
+                        <td>${part.quantity}</td>
+                        <td>$${(part.price * part.quantity).toFixed(2)}</td>
+                        <td class="action-cell">
+                            <button onclick="removePart(${part.id})" style="background: none; border: none; color: var(--danger); cursor: pointer;">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+            
+            function calculateRefund() {
+                let totalValue = 0;
+                let refundAmount = 0;
+                
+                parts.forEach(part => {
+                    const partTotal = part.price * part.quantity;
+                    totalValue += partTotal;
+                    
+                    if (part.refund) {
+                        refundAmount += partTotal;
                     }
                 });
                 
-                // Filter parts and calculate total price
-                const includedParts = kit.parts.filter(part => !excludedParts.includes(part.number));
-                includedParts.forEach(part => {
-                    totalPartsPrice += part.price;
-                });
-                
-                // Calculate refund amount
-                const refundAmount = (kitPrice * (totalPartsPrice / getTotalKitValue(kit.parts))).toFixed(2);
-                
-                const kitHTML = `
-                    <div class="product-card">
-                        <div class="product-header">
-                            <div class="product-title">${kit.name} (${kitNumber})</div>
-                            <div class="product-price">$${kitPrice}</div>
-                        </div>
-                        <div class="product-details">
-                            <h3>Kit Contents:</h3>
-                            <ul class="parts-list">
-                                ${kit.parts.map(part => `
-                                    <li class="part-item ${excludedParts.includes(part.number) ? 'excluded' : ''}">
-                                        <span>${part.number} - ${part.name}</span>
-                                        <span>$${part.price}</span>
-                                    </li>
-                                `).join('')}
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="refund-summary">
-                        <h3>Refund Calculation</h3>
-                        <div class="summary-item">
-                            <span>Total Kit Price:</span>
-                            <span>$${kitPrice}</span>
-                        </div>
-                        <div class="summary-item">
-                            <span>Value of Included Parts:</span>
-                            <span>$${totalPartsPrice.toFixed(2)}</span>
-                        </div>
-                        <div class="summary-item">
-                            <span>Total Kit Value:</span>
-                            <span>$${getTotalKitValue(kit.parts).toFixed(2)}</span>
-                        </div>
-                        <div class="summary-item">
-                            <span>Refund Amount:</span>
-                            <span>$${refundAmount}</span>
-                        </div>
-                    </div>
-                `;
-                
-                resultsSection.innerHTML = kitHTML;
+                totalValueElement.textContent = `$${totalValue.toFixed(2)}`;
+                refundAmountElement.textContent = `$${refundAmount.toFixed(2)}`;
             }
             
-            function getTotalKitValue(parts) {
-                return parts.reduce((total, part) => total + part.price, 0);
+            function toggleRefund(partId) {
+                const part = parts.find(p => p.id === partId);
+                if (part) {
+                    part.refund = !part.refund;
+                    calculateRefund();
+                    renderPartsList(); // Re-render to update checkbox state
+                }
+            }
+            
+            function removePart(partId) {
+                parts = parts.filter(p => p.id !== partId);
+                renderPartsList();
+                calculateRefund();
             }
             
             function showError(message) {
@@ -507,9 +473,12 @@
                 errorMessage.style.display = 'none';
             }
             
-            // Preload a kit for demonstration
-            kitNumberInput.value = 'DA5895';
-            kitPriceInput.value = '129.99';
+            // Make functions global for onclick handlers
+            window.toggleRefund = toggleRefund;
+            window.removePart = removePart;
+            
+            // Initialize UI
+            renderPartsList();
         });
     </script>
 </body>
