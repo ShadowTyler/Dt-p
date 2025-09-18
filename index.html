@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detroit Axle Kit Price Matcher</title>
+    <title>Parts Refund Calculator</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -145,6 +145,15 @@
             background: #0da271;
         }
         
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        
         .btn-full {
             width: 100%;
         }
@@ -274,20 +283,26 @@
             font-size: 0.9rem;
             color: var(--secondary);
         }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Detroit Axle Kit Price Matcher</h1>
+            <h1>Parts Refund Calculator</h1>
             <p>Calculate refund amounts for individual parts from kits</p>
         </header>
         
         <div class="instructions">
             <h3>How to Use:</h3>
             <ol>
-                <li>Enter the total kit price</li>
-                <li>Add parts with their individual prices</li>
+                <li>Enter the total kit price (usually lower than sum of individual parts)</li>
+                <li>Add parts with their individual retail prices</li>
                 <li>Select which parts to include in the refund calculation</li>
                 <li>Review the calculated refund amount</li>
             </ol>
@@ -312,7 +327,7 @@
                 <div>
                     <div class="input-group">
                         <label for="partNumber">Part Number</label>
-                        <input type="text" class="input-field" id="partNumber" placeholder="e.g., DA5895">
+                        <input type="text" class="input-field" id="partNumber" placeholder="e.g., BRK5895">
                     </div>
                     
                     <div class="input-group">
@@ -323,7 +338,7 @@
                 
                 <div>
                     <div class="input-group">
-                        <label for="partPrice">Price ($)</label>
+                        <label for="partPrice">Retail Price ($)</label>
                         <input type="number" class="input-field" id="partPrice" placeholder="e.g., 42.50" step="0.01">
                     </div>
                     
@@ -350,7 +365,7 @@
                             <th class="checkbox-cell">Refund</th>
                             <th>Part Number</th>
                             <th>Part Name</th>
-                            <th>Price</th>
+                            <th>Retail Price</th>
                             <th>Quantity</th>
                             <th>Total</th>
                             <th class="action-cell">Actions</th>
@@ -368,6 +383,12 @@
                 </div>
             </div>
             
+            <div class="button-group">
+                <button class="btn btn-danger" id="clearAllBtn">
+                    <i class="fas fa-trash"></i> Clear All
+                </button>
+            </div>
+            
             <div class="refund-summary" id="refundSummary">
                 <h3>Refund Summary</h3>
                 <div class="summary-item">
@@ -375,12 +396,16 @@
                     <span id="kitPriceValue">$0.00</span>
                 </div>
                 <div class="summary-item">
-                    <span>Total Parts Value:</span>
-                    <span id="totalPartsValue">$0.00</span>
+                    <span>Total Retail Value of All Parts:</span>
+                    <span id="totalRetailValue">$0.00</span>
                 </div>
                 <div class="summary-item">
-                    <span>Selected Parts Value:</span>
-                    <span id="selectedPartsValue">$0.00</span>
+                    <span>Retail Value of Selected Parts:</span>
+                    <span id="selectedRetailValue">$0.00</span>
+                </div>
+                <div class="summary-item">
+                    <span>Kit Discount Percentage:</span>
+                    <span id="discountPercentage">0%</span>
                 </div>
                 <div class="summary-item">
                     <span>Refund Amount:</span>
@@ -388,13 +413,14 @@
                 </div>
                 
                 <div class="calculation-explanation">
-                    <p><strong>Calculation:</strong> (Selected Parts Value ÷ Total Parts Value) × Kit Price = Refund Amount</p>
+                    <p><strong>Calculation:</strong> (Selected Parts Retail Value) × (Kit Price ÷ Total Retail Value) = Refund Amount</p>
+                    <p>This accounts for the discount applied when purchasing as a kit.</p>
                 </div>
             </div>
         </div>
         
         <footer>
-            <p>Detroit Axle Kit Price Matcher &copy; 2023 | Designed for GitHub Pages deployment</p>
+            <p>Parts Refund Calculator &copy; 2023 | Designed for GitHub Pages deployment</p>
         </footer>
     </div>
 
@@ -407,12 +433,14 @@
             const partPriceInput = document.getElementById('partPrice');
             const partQuantityInput = document.getElementById('partQuantity');
             const addPartBtn = document.getElementById('addPartBtn');
+            const clearAllBtn = document.getElementById('clearAllBtn');
             const partsList = document.getElementById('partsList');
             const errorMessage = document.getElementById('errorMessage');
             const errorText = document.getElementById('errorText');
             const kitPriceValueElement = document.getElementById('kitPriceValue');
-            const totalPartsValueElement = document.getElementById('totalPartsValue');
-            const selectedPartsValueElement = document.getElementById('selectedPartsValue');
+            const totalRetailValueElement = document.getElementById('totalRetailValue');
+            const selectedRetailValueElement = document.getElementById('selectedRetailValue');
+            const discountPercentageElement = document.getElementById('discountPercentage');
             const refundAmountElement = document.getElementById('refundAmount');
             const emptyState = document.getElementById('emptyState');
             const partsTable = document.getElementById('partsTable');
@@ -424,6 +452,7 @@
             // Event listeners
             setKitPriceBtn.addEventListener('click', setKitPrice);
             addPartBtn.addEventListener('click', addPart);
+            clearAllBtn.addEventListener('click', clearAll);
             
             function setKitPrice() {
                 const price = parseFloat(kitPriceInput.value);
@@ -459,14 +488,14 @@
                 
                 hideError();
                 
-                // Add part to array
+                // Add part to array (refund is false by default)
                 parts.push({
                     id: Date.now(),
                     number: partNumber,
                     name: partName,
                     price: partPrice,
                     quantity: partQuantity,
-                    refund: true
+                    refund: false  // Default to not selected for refund
                 });
                 
                 // Clear form
@@ -513,27 +542,37 @@
             }
             
             function calculateRefund() {
-                let totalPartsValue = 0;
-                let selectedPartsValue = 0;
+                let totalRetailValue = 0;
+                let selectedRetailValue = 0;
                 
                 parts.forEach(part => {
                     const partTotal = part.price * part.quantity;
-                    totalPartsValue += partTotal;
+                    totalRetailValue += partTotal;
                     
                     if (part.refund) {
-                        selectedPartsValue += partTotal;
+                        selectedRetailValue += partTotal;
                     }
                 });
                 
-                totalPartsValueElement.textContent = `$${totalPartsValue.toFixed(2)}`;
-                selectedPartsValueElement.textContent = `$${selectedPartsValue.toFixed(2)}`;
+                totalRetailValueElement.textContent = `$${totalRetailValue.toFixed(2)}`;
+                selectedRetailValueElement.textContent = `$${selectedRetailValue.toFixed(2)}`;
                 
-                // Calculate refund amount based on proportion of selected parts value to total parts value
+                // Calculate refund amount based on proportion of selected parts retail value to total retail value
                 let refundAmount = 0;
-                if (totalPartsValue > 0) {
-                    refundAmount = (selectedPartsValue / totalPartsValue) * kitPrice;
+                let discountPercentage = 0;
+                
+                if (totalRetailValue > 0 && kitPrice > 0) {
+                    // Calculate the discount ratio (kit price / total retail value)
+                    const discountRatio = kitPrice / totalRetailValue;
+                    
+                    // Calculate discount percentage
+                    discountPercentage = (100 - (discountRatio * 100)).toFixed(1);
+                    
+                    // Apply the same discount ratio to the selected parts
+                    refundAmount = selectedRetailValue * discountRatio;
                 }
                 
+                discountPercentageElement.textContent = `${discountPercentage}%`;
                 refundAmountElement.textContent = `$${refundAmount.toFixed(2)}`;
             }
             
@@ -548,6 +587,15 @@
             
             function removePart(partId) {
                 parts = parts.filter(p => p.id !== partId);
+                renderPartsList();
+                calculateRefund();
+            }
+            
+            function clearAll() {
+                parts = [];
+                kitPrice = 0;
+                kitPriceInput.value = '';
+                kitPriceValueElement.textContent = '$0.00';
                 renderPartsList();
                 calculateRefund();
             }
@@ -567,41 +615,6 @@
             
             // Initialize UI
             renderPartsList();
-            
-            // Set a sample kit price for demonstration
-            kitPriceInput.value = '199.99';
-            setKitPrice();
-            
-            // Add sample parts for demonstration
-            parts.push({
-                id: 1,
-                number: 'DA5895',
-                name: 'Brake Caliper',
-                price: 42.50,
-                quantity: 2,
-                refund: true
-            });
-            
-            parts.push({
-                id: 2,
-                number: 'DA4787',
-                name: 'CV Axle',
-                price: 67.99,
-                quantity: 1,
-                refund: true
-            });
-            
-            parts.push({
-                id: 3,
-                number: 'DA-BC001',
-                name: 'Brake Cleaner',
-                price: 5.99,
-                quantity: 1,
-                refund: false
-            });
-            
-            renderPartsList();
-            calculateRefund();
         });
     </script>
 </body>
