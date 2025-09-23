@@ -301,7 +301,7 @@
         <div class="instructions">
             <h3>How to Use:</h3>
             <ol>
-                <li>Enter the total kit price (usually lower than sum of individual parts)</li>
+                <li>Enter the total kit price</li>
                 <li>Add parts with their individual retail prices</li>
                 <li>Select which parts to include in the refund calculation</li>
                 <li>Review the calculated refund amount</li>
@@ -404,17 +404,13 @@
                     <span id="selectedRetailValue">$0.00</span>
                 </div>
                 <div class="summary-item">
-                    <span>Kit Discount Percentage:</span>
-                    <span id="discountPercentage">0%</span>
-                </div>
-                <div class="summary-item">
                     <span>Refund Amount:</span>
                     <span id="refundAmount">$0.00</span>
                 </div>
                 
                 <div class="calculation-explanation">
-                    <p><strong>Calculation:</strong> (Selected Parts Retail Value) × (Kit Price ÷ Total Retail Value) = Refund Amount</p>
-                    <p>This accounts for the discount applied when purchasing as a kit.</p>
+                    <p><strong>Calculation:</strong> (Selected Parts Retail Value ÷ Total Retail Value) × Kit Price = Refund Amount</p>
+                    <p>This calculates the proportional value of the selected parts from the kit price.</p>
                 </div>
             </div>
         </div>
@@ -440,7 +436,6 @@
             const kitPriceValueElement = document.getElementById('kitPriceValue');
             const totalRetailValueElement = document.getElementById('totalRetailValue');
             const selectedRetailValueElement = document.getElementById('selectedRetailValue');
-            const discountPercentageElement = document.getElementById('discountPercentage');
             const refundAmountElement = document.getElementById('refundAmount');
             const emptyState = document.getElementById('emptyState');
             const partsTable = document.getElementById('partsTable');
@@ -557,22 +552,14 @@
                 totalRetailValueElement.textContent = `$${totalRetailValue.toFixed(2)}`;
                 selectedRetailValueElement.textContent = `$${selectedRetailValue.toFixed(2)}`;
                 
-                // Calculate refund amount based on proportion of selected parts retail value to total retail value
+                // Calculate refund amount
                 let refundAmount = 0;
-                let discountPercentage = 0;
                 
                 if (totalRetailValue > 0 && kitPrice > 0) {
-                    // Calculate the discount ratio (kit price / total retail value)
-                    const discountRatio = kitPrice / totalRetailValue;
-                    
-                    // Calculate discount percentage
-                    discountPercentage = (100 - (discountRatio * 100)).toFixed(1);
-                    
-                    // Apply the same discount ratio to the selected parts
-                    refundAmount = selectedRetailValue * discountRatio;
+                    // Calculate the proportional value of selected parts from the kit price
+                    refundAmount = (selectedRetailValue / totalRetailValue) * kitPrice;
                 }
                 
-                discountPercentageElement.textContent = `${discountPercentage}%`;
                 refundAmountElement.textContent = `$${refundAmount.toFixed(2)}`;
             }
             
