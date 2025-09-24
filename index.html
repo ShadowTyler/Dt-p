@@ -105,6 +105,13 @@
             border-color: var(--primary);
         }
         
+        .quantity-note {
+            font-size: 0.8rem;
+            color: var(--secondary);
+            margin-top: 5px;
+            font-style: italic;
+        }
+        
         .btn {
             padding: 15px 25px;
             border: none;
@@ -154,8 +161,22 @@
             background: #dc2626;
         }
         
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background: #e5940c;
+        }
+        
         .btn-full {
             width: 100%;
+        }
+        
+        .btn-small {
+            padding: 8px 12px;
+            font-size: 0.9rem;
         }
         
         .parts-table {
@@ -185,7 +206,8 @@
         }
         
         .action-cell {
-            width: 80px;
+            width: 120px;
+            text-align: center;
         }
         
         .refund-summary {
@@ -323,6 +345,29 @@
             background-color: #fee2e2;
             color: #991b1b;
         }
+        
+        .edit-form {
+            display: none;
+            background-color: #f8fafc;
+            padding: 15px;
+            border-radius: var(--radius);
+            margin: 10px 0;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .edit-form.active {
+            display: block;
+        }
+        
+        .edit-form .input-section {
+            margin-bottom: 15px;
+        }
+        
+        .edit-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
     </style>
 </head>
 <body>
@@ -374,6 +419,7 @@
                     <div class="input-group">
                         <label for="partQuantity">Quantity</label>
                         <input type="number" class="input-field" id="partQuantity" placeholder="e.g., 2" value="1" min="1">
+                        <div class="quantity-note">Make sure the quantity is correct</div>
                     </div>
                 </div>
             </div>
@@ -479,6 +525,7 @@
             
             let kitPrice = 0;
             let parts = [];
+            let editingPartId = null;
             
             // Event listeners
             kitPriceInput.addEventListener('input', updateKitPrice);
@@ -499,6 +546,12 @@
             }
             
             function addPart() {
+                // If we're editing, update the part instead of adding a new one
+                if (editingPartId !== null) {
+                    updatePart(editingPartId);
+                    return;
+                }
+                
                 const partNumber = partNumberInput.value.trim();
                 const partName = partNameInput.value.trim();
                 const partPrice = parseFloat(partPriceInput.value);
@@ -522,15 +575,58 @@
                 });
                 
                 // Clear form
+                clearForm();
+                
+                // Update UI
+                renderPartsList();
+                calculateRefund();
+            }
+            
+            function updatePart(partId) {
+                const partNumber = partNumberInput.value.trim();
+                const partName = partNameInput.value.trim();
+                const partPrice = parseFloat(partPriceInput.value);
+                const partQuantity = parseInt(partQuantityInput.value);
+                
+                if (!partNumber || !partName || isNaN(partPrice) || partPrice <= 0 || isNaN(partQuantity) || partQuantity <= 0) {
+                    showError('Please fill all part details correctly');
+                    return;
+                }
+                
+                hideError();
+                
+                // Find and update the part
+                const partIndex = parts.findIndex(p => p.id === partId);
+                if (partIndex !== -1) {
+                    parts[partIndex] = {
+                        ...parts[partIndex],
+                        number: partNumber,
+                        name: partName,
+                        price: partPrice,
+                        quantity: partQuantity
+                    };
+                }
+                
+                // Reset editing state
+                editingPartId = null;
+                addPartBtn.innerHTML = '<i class="fas fa-plus"></i> Add Part';
+                addPartBtn.classList.remove('btn-warning');
+                addPartBtn.classList.add('btn-primary');
+                
+                // Clear form
+                clearForm();
+                
+                // Update UI
+                renderPartsList();
+                calculateRefund();
+            }
+            
+            function clearForm() {
                 partNumberInput.value = '';
                 partNameInput.value = '';
                 partPriceInput.value = '';
                 partQuantityInput.value = '1';
                 partNumberInput.focus();
-                
-                // Update UI
-                renderPartsList();
-                calculateRefund();
             }
             
             function renderPartsList() {
@@ -556,7 +652,10 @@
                         <td>${part.quantity}</td>
                         <td>$${(part.price * part.quantity).toFixed(2)}</td>
                         <td class="action-cell">
-                            <button onclick="removePart(${part.id})" style="background: none; border: none; color: var(--danger); cursor: pointer;">
+                            <button onclick="editPart(${part.id})" class="btn btn-secondary btn-small">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="removePart(${part.id})" class="btn btn-danger btn-small">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </td>
@@ -628,6 +727,26 @@
                 }
             }
             
+            function editPart(partId) {
+                const part = parts.find(p => p.id === partId);
+                if (part) {
+                    // Fill the form with the part's data
+                    partNumberInput.value = part.number;
+                    partNameInput.value = part.name;
+                    partPriceInput.value = part.price;
+                    partQuantityInput.value = part.quantity;
+                    
+                    // Change the button to "Update Part"
+                    editingPartId = partId;
+                    addPartBtn.innerHTML = '<i class="fas fa-save"></i> Update Part';
+                    addPartBtn.classList.remove('btn-primary');
+                    addPartBtn.classList.add('btn-warning');
+                    
+                    // Scroll to the form
+                    partNumberInput.focus();
+                }
+            }
+            
             function removePart(partId) {
                 parts = parts.filter(p => p.id !== partId);
                 renderPartsList();
@@ -639,6 +758,11 @@
                 kitPrice = 0;
                 kitPriceInput.value = '';
                 kitPriceValueElement.textContent = '$0.00';
+                editingPartId = null;
+                addPartBtn.innerHTML = '<i class="fas fa-plus"></i> Add Part';
+                addPartBtn.classList.remove('btn-warning');
+                addPartBtn.classList.add('btn-primary');
+                clearForm();
                 renderPartsList();
                 calculateRefund();
                 refundNoteElement.style.display = 'none';
@@ -655,6 +779,7 @@
             
             // Make functions global for onclick handlers
             window.toggleRefund = toggleRefund;
+            window.editPart = editPart;
             window.removePart = removePart;
             
             // Initialize UI
