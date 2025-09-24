@@ -215,17 +215,6 @@
             margin-bottom: 20px;
         }
         
-        .kit-price-input {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-        
-        .kit-price-input .input-group {
-            flex: 1;
-            margin-bottom: 0;
-        }
-        
         .error-message {
             display: none;
             background-color: #fee2e2;
@@ -261,6 +250,17 @@
             margin-top: 50px;
             color: var(--secondary);
             padding: 20px;
+            background: none !important;
+        }
+        
+        .footer-text {
+            margin-bottom: 10px;
+        }
+        
+        .chicken-wing {
+            font-style: italic;
+            color: var(--primary);
+            font-weight: 600;
         }
         
         .empty-state {
@@ -289,6 +289,29 @@
             gap: 15px;
             margin-top: 20px;
         }
+        
+        .refund-note {
+            text-align: center;
+            margin-top: 10px;
+            padding: 10px;
+            font-style: italic;
+            border-radius: var(--radius);
+        }
+        
+        .note-fair {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .note-medium {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        
+        .note-high {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
     </style>
 </head>
 <body>
@@ -311,14 +334,9 @@
         <div class="card">
             <div class="kit-price-section">
                 <h3>Kit Information</h3>
-                <div class="kit-price-input">
-                    <div class="input-group">
-                        <label for="kitPrice">Total Kit Price ($)</label>
-                        <input type="number" class="input-field" id="kitPrice" placeholder="Enter the full kit price" step="0.01">
-                    </div>
-                    <button class="btn btn-primary" id="setKitPriceBtn">
-                        <i class="fas fa-check"></i> Set Price
-                    </button>
+                <div class="input-group">
+                    <label for="kitPrice">Total Kit Price ($)</label>
+                    <input type="number" class="input-field" id="kitPrice" placeholder="Enter the full kit price" step="0.01">
                 </div>
             </div>
             
@@ -408,6 +426,8 @@
                     <span id="refundAmount">$0.00</span>
                 </div>
                 
+                <div id="refundNote" class="refund-note"></div>
+                
                 <div class="calculation-explanation">
                     <p><strong>Calculation:</strong> (Selected Parts Retail Value ÷ Total Retail Value) × Kit Price = Refund Amount</p>
                     <p>This calculates the proportional value of the selected parts from the kit price.</p>
@@ -416,14 +436,14 @@
         </div>
         
         <footer>
-            <p>Parts Refund Calculator &copy; 2023 | Designed for GitHub Pages deployment</p>
+            <div class="footer-text">Refund Calculator made by r.alkukhun 2025</div>
+            <div class="chicken-wing">dynamite chicken wing</div>
         </footer>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const kitPriceInput = document.getElementById('kitPrice');
-            const setKitPriceBtn = document.getElementById('setKitPriceBtn');
             const partNumberInput = document.getElementById('partNumber');
             const partNameInput = document.getElementById('partName');
             const partPriceInput = document.getElementById('partPrice');
@@ -437,6 +457,7 @@
             const totalRetailValueElement = document.getElementById('totalRetailValue');
             const selectedRetailValueElement = document.getElementById('selectedRetailValue');
             const refundAmountElement = document.getElementById('refundAmount');
+            const refundNoteElement = document.getElementById('refundNote');
             const emptyState = document.getElementById('emptyState');
             const partsTable = document.getElementById('partsTable');
             const refundSummary = document.getElementById('refundSummary');
@@ -445,29 +466,21 @@
             let parts = [];
             
             // Event listeners
-            setKitPriceBtn.addEventListener('click', setKitPrice);
+            kitPriceInput.addEventListener('input', updateKitPrice);
             addPartBtn.addEventListener('click', addPart);
             clearAllBtn.addEventListener('click', clearAll);
             
-            function setKitPrice() {
+            function updateKitPrice() {
                 const price = parseFloat(kitPriceInput.value);
                 
-                if (isNaN(price) || price <= 0) {
-                    showError('Please enter a valid kit price');
-                    return;
+                if (isNaN(price) || price < 0) {
+                    kitPrice = 0;
+                } else {
+                    kitPrice = price;
                 }
                 
-                kitPrice = price;
                 kitPriceValueElement.textContent = `$${kitPrice.toFixed(2)}`;
                 calculateRefund();
-                
-                // Show success feedback
-                setKitPriceBtn.innerHTML = '<i class="fas fa-check"></i> Price Set';
-                setKitPriceBtn.style.background = '#10b981';
-                setTimeout(() => {
-                    setKitPriceBtn.innerHTML = '<i class="fas fa-check"></i> Set Price';
-                    setKitPriceBtn.style.background = '';
-                }, 2000);
             }
             
             function addPart() {
@@ -561,6 +574,34 @@
                 }
                 
                 refundAmountElement.textContent = `$${refundAmount.toFixed(2)}`;
+                
+                // Update refund note based on amount
+                updateRefundNote(refundAmount);
+            }
+            
+            function updateRefundNote(amount) {
+                let note = '';
+                let noteClass = '';
+                
+                if (amount === 0) {
+                    note = '';
+                    refundNoteElement.style.display = 'none';
+                } else if (amount > 0 && amount <= 25) {
+                    note = 'It looks fair lol';
+                    noteClass = 'note-fair';
+                    refundNoteElement.style.display = 'block';
+                } else if (amount > 25 && amount <= 75) {
+                    note = 'Damn bruh what is he returning';
+                    noteClass = 'note-medium';
+                    refundNoteElement.style.display = 'block';
+                } else if (amount > 75) {
+                    note = 'Damn man you gonna make us poor';
+                    noteClass = 'note-high';
+                    refundNoteElement.style.display = 'block';
+                }
+                
+                refundNoteElement.textContent = note;
+                refundNoteElement.className = 'refund-note ' + noteClass;
             }
             
             function toggleRefund(partId) {
@@ -585,6 +626,7 @@
                 kitPriceValueElement.textContent = '$0.00';
                 renderPartsList();
                 calculateRefund();
+                refundNoteElement.style.display = 'none';
             }
             
             function showError(message) {
