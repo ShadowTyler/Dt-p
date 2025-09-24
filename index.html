@@ -257,10 +257,20 @@
             margin-bottom: 10px;
         }
         
-        .chicken-wing {
-            font-style: italic;
-            color: var(--primary);
-            font-weight: 600;
+        .footer-image {
+            margin-top: 15px;
+            max-width: 200px;
+            margin-left: auto;
+            margin-right: auto;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .footer-image img {
+            width: 100%;
+            height: auto;
+            display: block;
         }
         
         .empty-state {
@@ -296,6 +306,7 @@
             padding: 10px;
             font-style: italic;
             border-radius: var(--radius);
+            font-weight: 500;
         }
         
         .note-fair {
@@ -437,7 +448,11 @@
         
         <footer>
             <div class="footer-text">Refund Calculator made by r.alkukhun 2025</div>
-            <div class="chicken-wing">dynamite chicken wing</div>
+            <div class="footer-image">
+                <!-- REPLACE THE SRC ATTRIBUTE WITH YOUR IMAGE URL -->
+                <img src="https://raw.githubusercontent.com/ShadowTyler/Dt-p/refs/heads/main/Dynamite%20Sauce.png" alt="Footer Image">
+                <!-- EXAMPLE: <img src="https://example.com/your-image.jpg" alt="Dynamite Chicken Wing"> -->
+            </div>
         </footer>
     </div>
 
@@ -586,16 +601,16 @@
                 if (amount === 0) {
                     note = '';
                     refundNoteElement.style.display = 'none';
-                } else if (amount > 0 && amount <= 25) {
-                    note = 'It looks fair lol';
+                } else if (amount > 0 && amount <= 50) {
+                    note = 'It looks fair';
                     noteClass = 'note-fair';
                     refundNoteElement.style.display = 'block';
-                } else if (amount > 25 && amount <= 75) {
-                    note = 'Damn bruh what is he returning';
+                } else if (amount > 50 && amount <= 100) {
+                    note = 'Are u sure about it?';
                     noteClass = 'note-medium';
                     refundNoteElement.style.display = 'block';
-                } else if (amount > 75) {
-                    note = 'Damn man you gonna make us poor';
+                } else if (amount > 100) {
+                    note = 'Bruh are u looking to make us poor?';
                     noteClass = 'note-high';
                     refundNoteElement.style.display = 'block';
                 }
